@@ -255,7 +255,7 @@ class VideoDataset(Dataset):
                     try:
                         video_reader.seek(p)
                         break
-                    except EOFError:
+                    except (EOFError, AssertionError):
                         attempts += 1
                         p -= 1
                 for i, ind in enumerate(
@@ -266,9 +266,19 @@ class VideoDataset(Dataset):
                         seg_imgs = [video_reader.next().asnumpy()]
                     else:
                         seg_imgs = [video_reader.next().asnumpy()]
+                    if not all([len(img.shape[:2]) == 2 for img in seg_imgs]):
+                        import pdb
+                        pdb.set_trace()
+                        pass
                     images.extend(seg_imgs)
                     if p + self.new_step < record.num_frames:
                         video_reader.skip_frames(self.new_step)
+            try:
+                assert all([len(img.shape[:2]) == 2 for img in images])
+            except AssertionError:
+                import pdb
+                pdb.set_trace()
+                pass
             return images
         else:
             images = list()

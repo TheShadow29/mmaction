@@ -68,6 +68,8 @@ def main():
 
     dataset = obj_from_dict(cfg.data.test, datasets, dict(test_mode=True))
     if args.gpus == 1:
+        # import pdb
+        # pdb.set_trace()
         model = build_recognizer(
             cfg.model, train_cfg=None, test_cfg=cfg.test_cfg)
         load_checkpoint(model, args.checkpoint, strict=True)
@@ -80,6 +82,7 @@ def main():
             num_gpus=1,
             dist=False,
             shuffle=False)
+
         outputs = single_test(model, data_loader)
     else:
         model_args = cfg.model.copy()
