@@ -174,7 +174,10 @@ class VideoDataset(Dataset):
 
     def _load_image(self, video_reader, directory, modality, idx):
         if modality in ['RGB', 'RGBDiff']:
-            return [video_reader[idx - 1]]
+            to_return = video_reader[idx-1]
+            if to_return is None:
+                print(video_reader, idx)
+            return [to_return]
         elif modality == 'Flow':
             raise NotImplementedError
         else:
@@ -273,12 +276,6 @@ class VideoDataset(Dataset):
                     images.extend(seg_imgs)
                     if p + self.new_step < record.num_frames:
                         video_reader.skip_frames(self.new_step)
-            try:
-                assert all([len(img.shape[:2]) == 2 for img in images])
-            except AssertionError:
-                import pdb
-                pdb.set_trace()
-                pass
             return images
         else:
             images = list()
@@ -296,6 +293,7 @@ class VideoDataset(Dataset):
                             video_reader,
                             osp.join(self.img_prefix, record.path),
                             modality, p)
+
                     images.extend(seg_imgs)
                     if p + self.new_step < record.num_frames:
                         p += self.new_step
@@ -326,6 +324,12 @@ class VideoDataset(Dataset):
         image_tmpl = self.image_tmpls[0]
         img_group = self._get_frames(record, video_reader, image_tmpl,
                                      modality, segment_indices, skip_offsets)
+        try:
+            assert all([len(img.shape[:2]) == 2 for img in img_group])
+        except (AssertionError, AttributeError):
+            import pdb
+            pdb.set_trace()
+            pass
 
         flip = True if np.random.rand() < self.flip_ratio else False
         if (self.img_scale_dict is not None and

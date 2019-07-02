@@ -28,7 +28,7 @@ test_cfg = None
 dataset_type = 'RawFramesDataset'
 data_root = 'data/ucf101/rawframes'
 img_norm_cfg = dict(
-   mean=[104, 117, 128], std=[1, 1, 1], to_rgb=False)
+    mean=[104, 117, 128], std=[1, 1, 1], to_rgb=False)
 
 data = dict(
     videos_per_gpu=32,
@@ -100,6 +100,7 @@ data = dict(
         test_mode=True))
 # optimizer
 optimizer = dict(type='SGD', lr=0.001, momentum=0.9, weight_decay=0.0005)
+# optimizer = dict(type='SGD', lr=0.0, momentum=0.9, weight_decay=0.0005)
 optimizer_config = dict(grad_clip=dict(max_norm=40, norm_type=2))
 # learning policy
 lr_config = dict(
@@ -120,9 +121,6 @@ log_config = dict(
 total_epochs = 80
 dist_params = dict(backend='nccl')
 log_level = 'INFO'
-work_dir = './work_dirs/tsn_2d_rgb_bninception_seg_3_f1s1_b32_g8'
+work_dir = './work_dirs/tsn_2d_rgb_bninception_seg_3_f1s1_b32_g8_28June19'
 load_from = None
 resume_from = None
-
-
-
